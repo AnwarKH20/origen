@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Tahona</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        header {
+            background-color: #004d40;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            position: relative;
+        }
+        .language-toggle {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: white;
+            color: #004d40;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 20px; }
+        .gallery img { max-width: 200px; height: auto; border-radius: 8px; transition: transform 0.3s ease-in-out; }
+        .gallery img:hover { transform: scale(1.1); }
+        .category-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .category-buttons button { padding: 10px; border: none; background: #004d40; color: white; cursor: pointer; border-radius: 5px; }
+    </style>
+    <script>
+        let currentLang = "ar";
+        function toggleLanguage() {
+            currentLang = currentLang === "ar" ? "he" : "ar";
+            document.documentElement.lang = currentLang;
+            const translations = {
+                "ar": { "title": "Altahona", "works": "أعمالنا", "categories": ["درابزينات", "شبابيك", "أبواب", "منوعات"] },
+                "he": { "title": "טחונה בעמ", "works": "העבודות שלנו", "categories": ["מעקות", "חלונות", "דלתות", "שונות"] }
+            };
+            document.getElementById("title").innerText = translations[currentLang].title;
+            document.getElementById("works").innerText = translations[currentLang].works;
+            const buttons = document.querySelectorAll(".category-buttons button");
+            buttons.forEach((btn, index) => btn.innerText = translations[currentLang].categories[index]);
+        }
+        async function loadGallery(category) {
+            const galleryContainer = document.querySelector(".gallery");
+            galleryContainer.innerHTML = "";
+            const repoOwner = "AnwarKH2";
+            const repoName = "altahona";
+            const folderPath = category;
+            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("فشل في جلب البيانات");
+                const files = await response.json();
+                files.forEach(file => {
+                    if (file.type === "file" && (file.name.endsWith(".jpg") || file.name.endsWith(".png") || file.name.endsWith(".jpeg"))) {
+                        const img = document.createElement("img");
+                        img.src = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${folderPath}/${file.name}`;
+                        img.alt = "صورة من المعرض";
+                        galleryContainer.appendChild(img);
+                    }
+                });
+            } catch (error) {
+                console.error("خطأ في تحميل الصور:", error);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => loadGallery("درابزينات"));
+    </script>
+</head>
+<body>
+    <header>
+        <button class="language-toggle" onclick="toggleLanguage()">🌍עִברִית</button>
+        <h1 id="title">Altahona</h1>
+    </header>
+    <section>
+        <h2 id="works">أعمالنا</h2>
+        <div class="category-buttons">
+            <button onclick="loadGallery('railings')">درابزينات</button>
+            <button onclick="loadGallery('windows')">شبابيك</button>
+            <button onclick="loadGallery('doors')">أبواب</button>
+            <button onclick="loadGallery('misc')">منوعات</button>
+        </div>
+        <div class="gallery"></div>
+    </section>
+    <footer>&copy; 2025 Al-Tahona - جميع الحقوق محفوظة</footer>
+</body>
+</html>
