@@ -38,7 +38,6 @@
     </style>
     <script>
         let currentLang = "ar";
-        onload(loadGallery('railings'));
         function toggleLanguage() {
             currentLang = currentLang === "ar" ? "he" : "ar";
             document.documentElement.lang = currentLang;
@@ -75,6 +74,7 @@
             }
         }
         document.addEventListener("DOMContentLoaded", () => loadGallery("درابزينات"));
+        onload(loadGallery('railings'));
     </script>
 </head>
 <body>
